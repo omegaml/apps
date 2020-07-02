@@ -1,4 +1,5 @@
 .idea
+config.yml
 
 # Created by https://www.toptal.com/developers/gitignore/api/python
 # Edit at https://www.toptal.com/developers/gitignore?templates=python
@@ -266,3 +267,9 @@ fabric.properties
 .idea/$CACHE_FILE$
 
 # End of https://www.toptal.com/developers/gitignore/api/pycharm
+/build_sdist.err
+/build_sdist.out
+/config.yml
+/helloworld/build_sdist.err
+/helloworld/build_sdist.out
+/helloworld/config.yml
