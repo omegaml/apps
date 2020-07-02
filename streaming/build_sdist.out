@@ -1,0 +1,12 @@
+running sdist
+running check
+writing manifest file 'MANIFEST'
+creating streaming-1.0
+creating streaming-1.0/streaming
+making hard links in streaming-1.0...
+hard linking README -> streaming-1.0
+hard linking setup.py -> streaming-1.0
+hard linking streaming/__init__.py -> streaming-1.0/streaming
+hard linking streaming/app.py -> streaming-1.0/streaming
+Creating tar archive
+removing 'streaming-1.0' (and everything under it)
