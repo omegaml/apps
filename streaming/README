@@ -1,0 +1,12 @@
+example package for distribution
+
+Run it locally
+
+$ python helloworld/apps.py
+
+Run it on omegaml
+
+$ om cloud login <user> <apikey>
+$ om scripts put . hellworld
+
+then go to https://hub.omegaml.io/apps/restart/<user>/helloworld
