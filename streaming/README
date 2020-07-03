@@ -1,0 +1,55 @@
+Run this at omegaml.io
+----------------------
+
+1. Create a free trial account at https://omegaml.io
+
+2. In your local Python environment install the omega|ml client and
+   checkout this repository
+
+   $ pip install omegaml[all-client]
+   $ git clone https://github.com/omegaml/apps.git
+
+   Note you can avoid installing your own Python environment and just
+   run git clone by using omega|ml's hosted JupyterLab environment at
+   https://hub.omegaml.io:8888/
+
+3. Deploy the script in your account
+
+   $ om cloud login <user> <apikey>
+   $ om scripts put ./streaming apps/streaming
+
+   then go to https://hub.omegaml.io/apps/restart/<user>/streaming/status to
+   see the app is running ok (give it a few minutes to start)
+
+   This builds a pip-installable package, stores it in omega|ml's scripts store
+   and deploys it as a scalable kubernetes pod deployment.
+
+4. Publish messages to the stream by running this in your local Python
+   environment (or in Jupyter Notebook):
+
+   [] import minibatch as mb
+      import omegaml as om
+
+      stream = mb.stream('test', url=om.defaults.OMEGA_MONGO_URL)
+      stream.append({'data': 'value'})
+
+   then go to https://hub.omegaml.io/apps/restart/<user>/streaming/ to see
+   the message you have just sent.
+
+
+Note for development purpose you can modify and run the app locally:
+
+    $ python streaming/app.py
+    => open at http://localhost:5000
+
+    Note this will use your account's omega|ml storage as the minibatch data
+    buffer.
+
+
+
+
+
+
+
+
+
