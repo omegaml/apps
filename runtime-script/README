@@ -1,0 +1,89 @@
+Runtime script
+--------------
+
+This demonstrates the use of a simple script to run directly from a github repo and how
+to run it on the cloud.
+
+Usage:
+
+    # setup once
+    $ om shell
+    [] giturl = 'git+https://github.com/omegaml/apps@runtime-script#egg=mymodule&subdirectory=runtime-script'
+       om.scripts.put(giturl, 'mymodule')
+
+    # run on cloud
+    $ om runtime script mymodule
+    {"script": "mymodule", "kwargs": {"pure_python": false}, "result": {"datasets": [], "models": []}
+      "runtimes": 0.036387, "started": "2020-10-13T18:12:45.546714", "ended": "2020-10-13T18:12:45.583101"}
+
+
+How it works
+------------
+
+The you ask the runtime to run the script, omega|ml will:
+
+ 1. run pip install --target temp-path
+ 2. load the module
+ 3. call `mymodule.run(om)`.
+
+Note mymodule is just a name. You can name your module anything you like, as long as it contains a run() function.
+
+Note that once the module is loaded, the source will no longer be accessible by Python. That is, your module
+must load all dependencies at once (except for otherwise installed packages).
+
+
+How to use modules in a notebook
+--------------------------------
+
+Script modules can also be used inside a notebook:
+
+    module = om.scripts.get('mymodule')
+    result = module.run(om)
+
+What if my module is large or needs to install additional dependencies?
+
+Options:
+
+1. In setup.py add a install_requires dependency. Note this will
+   install all dependencies to the same temporary path. That is your module
+   must load all dependencies it requires at once
+
+    setup(...,
+          install_requires=['package==version']) # usual pip syntax
+
+2. Create a notebook that installs all dependencies, then load the script.
+   Then use the job runtime to run the notebook.
+
+    # your notebook
+    !pip  install ...
+    mod = om.scripts.get('mymodule')
+    mod.run(nom)
+
+3. Clone the git repository with your code directly, and add the path to load your module
+
+    # your notebook
+    !if [ ! -d /app/pylib/user/myapp ]; then git clone https://github.com/omegaml/apps /app/pylib/user/myapp; fi
+    sys.path.insert(0, '/app/pylib/user/myapp')
+    import mymodule
+
+    mymodule.run(om)
+
+Source layout
+-------------
+
+The general pip module layout applies. That is:
+
+    github.com/repo/mymodule
+    mymodule/
+       setup.py
+       mymodule/
+         __init__.py
+
+ The setup.py in its simplest form looks like this:
+
+    from distutils.core import setup
+    from setuptools import find_packages
+    setup(name='mymodule', version='1.0', description='a runtime module', author='omegaml',
+          author_email='info@omegaml.io', url='http://omegaml.io', packages=find_packages())
+
+More information an packaging Python code can be found at https://packaging.python.org/guides/distributing-packages-using-setuptools/
