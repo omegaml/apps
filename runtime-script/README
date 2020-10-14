@@ -20,7 +20,7 @@ Usage:
 How it works
 ------------
 
-The you ask the runtime to run the script, omega|ml will:
+On asking the runtime to run the script, omega|ml will:
 
  1. run pip install --target temp-path
  2. load the module
@@ -28,8 +28,16 @@ The you ask the runtime to run the script, omega|ml will:
 
 Note mymodule is just a name. You can name your module anything you like, as long as it contains a run() function.
 
-Note that once the module is loaded, the source will no longer be accessible by Python. That is, your module
-must load all dependencies at once (except for otherwise installed packages).
+Note that once the module is loaded, the source will no longer be accessible to Python. That is, your module
+must load all dependencies at once (except for otherwise installed packages). Alternatively, you can re-add the
+module's packages path to the Python path:
+
+    # mymodule.py
+    import sys
+    sys.path.insert(0, os.path.join(dirname(__file__), '..'))
+
+    def run(om, *args, **kwargs):
+        import dependency
 
 
 How to use modules in a notebook
@@ -62,11 +70,13 @@ Options:
 3. Clone the git repository with your code directly, and add the path to load your module
 
     # your notebook
-    !if [ ! -d /app/pylib/user/myapp ]; then git clone https://github.com/omegaml/apps /app/pylib/user/myapp; fi
-    sys.path.insert(0, '/app/pylib/user/myapp')
+    !if [ ! -d /app/pylib/user/myrepo ]; then git clone https://github.com/omegaml/apps /app/pylib/user/myrepo; fi
+    !if [ -d /app/pylib/user/myrepo ]; then cd /app/pylib/user/myrepo && git pull; fi
+    sys.path.insert(0, '/app/pylib/user/myrepo')
     import mymodule
 
     mymodule.run(om)
+
 
 Source layout
 -------------
