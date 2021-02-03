@@ -37,6 +37,7 @@ yhat = om.runtime.model('mymodel').predict(X)
 
 This is just one example. Of course you can use the full omega|ml functionality.
 
+
 Logging
 -------
 
@@ -69,13 +70,112 @@ $ om shell
 
 More complex setup, supporting Python's logging module:
 
-```python 
+```python
+import logging
+from omegaml.store.logging import OmegaLoggingHandler 
 # attach the omega-ml logging handler to any Python logger
 logger = logging.getLogger(__file__)
 handler = OmegaLoggingHandler.setup(reset=True, logger=logger)
 ``` 
 
+To route the Flask log to om.logger do this:
+
+```python
+import logging
+from omegaml.store.logging import OmegaLoggingHandler
+handler = OmegaLoggingHandler.setup(logger=logging.getLogger('root'), level='DEBUG')
+# server is the Flask() instance
+[logging.getLogger(l).addHandler(handler) for l in ('werkzeug', 'flask.app', server.name)]
+```
+
 *) in development. any framework can be supported by adding a omega|ml plugin 
+
+
+How apphub starts apps
+----------------------
+
+Apphub essentially does the following upon app start up
+
+```python
+server = Flask()
+base_uri = 'apps/<username>/<appname>'
+mod = om.scripts.get('apps/<appname>')
+mod.create_app(server=server, uri=base_uri)
+server.run()
+```
+
+Restarting my app
+-----------------
+
+Apps can be restarted either via the apphub UI at https://omegaml.io/apps or via
+the omegaml cli:
+
+```
+$ om runtime restart app <appname>
+```
+
+How are apps packaged?
+----------------------
+
+* `om.scripts.put` calls `python setup sdist` within the provided path. This creates
+  a tar file with the package, using the package's setup.py. The tar file is then
+  copied to the om.scripts database as a binary file.
+ 
+* `om.scripts.get` copies the tar file to a temporary directory, then
+  calls `pip install <package>`, then loads the `<appname>` module
+  
+Example:
+
+```
+$ om scripts put path/to/mypackage apps/mypackage
+=> python path/to/mypackage/setup.py sdist
+
+om.scripts.get('apps/mypackage') 
+=> copy from database to /tmp/path/mypackage.tar.gz
+=> pip install mypackage.tar.gz
+=> import mypackage
+```
+
+Note to include files in packages, such as html templates, css or js files, be
+sure to provide a MANIFEST.in *and* use include_package_data=True in setup.py.
+Read more about this here 
+https://stackoverflow.com/questions/7522250/how-to-include-package-data-with-setuptools-distutils 
+
+
+How can I specify dependencies?
+-------------------------------
+
+Dependencies can be specified using setup.py, as with any pip installable 
+package.
+
+```
+# setup.py 
+...
+setup(...., 
+      install_requires=['package==version']
+)
+```
+
+Read more on how to create pip installable packages at
+https://packaging.python.org/overview/#packaging-python-libraries-and-tools
+
+
+Why do I get module import errors?
+----------------------------------
+
+If your application is composed of many different modules which are loaded at
+runtime this can lead to import errors, even though the package is installed
+on the system. This is because packages and all its depdencies are loaded 
+from a temporary path that is not part of `sys.path`. This can cause import errors
+for packages that have not been loaded at startup time. 
+
+To add the temporary path, in your packages `__init__.py` add the following snipped:
+
+```python 
+import os 
+import sys
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..')) 
+``` 
 
 Contributing
 ------------
