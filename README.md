@@ -136,10 +136,16 @@ om.scripts.get('apps/mypackage')
 => import mypackage
 ```
 
-Note to include files in packages, such as html templates, css or js files, be
-sure to provide a MANIFEST.in *and* use include_package_data=True in setup.py.
-Read more about this here 
-https://stackoverflow.com/questions/7522250/how-to-include-package-data-with-setuptools-distutils 
+Notes:
+
+* By default, Flask assumes that static files and templates are packaged within 
+  the application module. 
+
+* To include files in packages, such as html templates, css or js files, be 
+  sure to provide a MANIFEST.in *and* use include_package_data=True in setup.py.
+  Read more about this here https://stackoverflow.com/questions/7522250/how-to-include-package-data-with-setuptools-distutils 
+
+* Detailed advise to package Flask apps can be found here https://flask.palletsprojects.com/en/1.1.x/tutorial/install/
 
 
 How can I specify dependencies?
@@ -160,6 +166,58 @@ Read more on how to create pip installable packages at
 https://packaging.python.org/overview/#packaging-python-libraries-and-tools
 
 
+How can I serve static files and templates?
+-------------------------------------------
+
+Static files are packaged with your application and can be served using
+Flask's `url_for` function. Note the use of the Blueprint syntax `.static` 
+instead of the global `static`. This is to ensure that your application can
+run from any URL.
+
+```html
+<!-- index.html -->
+<link rel="shortcut icon" href="{{ url_for('.static', filename='favicon.ico') }}">
+```  
+
+Templates are also packaged with your application. Use Flask's `render_template`
+function.
+
+```python
+def create_app(...., uri=None):
+    app = Blueprint(..., url_prefix=uri,
+                    static_folder='static',
+                    template_folder='templates')
+    @app.route('/'):
+        return render_template('myapp/index.html')
+```
+
+By default Flask loads static files and templates from the local disk, which in 
+docker and kubernetes is provided by emphemeral storage. It is however possible 
+to serve  static files and templates from om.datasets, effectively enabling 
+the separation of these assets from code. See the helloflask app for details.
+
+Why is there no permanent per-node file system?
+-----------------------------------------------
+
+omega|ml provides persistent, distributed and horizontally scalable storage
+through the om.datasets/models/scripts API. This storage is easily accessible by
+any omega|ml client, making it well suited for remote collaboration as well as
+to build scalable applications. The storage, backed by MongoDB and optionally 
+other databases and file systems, provides the ability to easily store 
+structured, unstructured and binary data in an efficient manner.
+
+Rationale:
+
+omega|ml is designed according to the 12factor methodology (https://12factor.net).
+These are a set of best practices to design and implement scalable, portable and 
+resilient applications built for the cloud. Two key principles are that
+applications should only rely on attached resources for persistency, and that
+processes should not share runtime state. These principles ensure that applications
+can be scaled easily and fast. A permanent file system on the other hand would 
+break these principles as applications would start relying on the particular state
+of the files in a particular node, which would break scalability and resiliency.
+
+   
 Why do I get module import errors?
 ----------------------------------
 

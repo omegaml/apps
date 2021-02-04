@@ -1,0 +1,13 @@
+<html>
+<head>
+    <link rel="stylesheet" href="{{ url_for('.static', filename='styles.css') }}">
+    <link rel="shortcut icon" href="{{ url_for('.static', filename='favicon.ico') }}">
+</head>
+<body>
+<div>
+    {% block content %}
+    <p>Hello world from base.html</p>
+    {% endblock %}
+</div>
+</body>
+</html>
