@@ -1,8 +1,5 @@
-<html>
-<head>
-    <link rel="stylesheet" href="{{ url_for('.static', filename='helloflask/styles.css') }}">
-</head>
-<body>
-    <p>Hello world from index.html</p>
-</body>
-</html>
+{% extends "helloflask/base.html" %}
+
+{% block content %}
+<p>Hello world from index.html</p>
+{% endblock %}

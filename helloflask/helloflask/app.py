@@ -1,7 +1,5 @@
-import logging
-from flask import Blueprint, render_template, Flask
-
-from omegaml.store.logging import OmegaLoggingHandler
+from flask import Blueprint, Flask, render_template
+from werkzeug.utils import redirect
 
 
 def create_app(context=None, server=None, uri=None, **kwargs):
@@ -13,7 +11,6 @@ def create_app(context=None, server=None, uri=None, **kwargs):
         server (Flask): the Flask() instance
         uri (str): the base uri of the application on apphub
     """
-
     # setup blueprint with template and static paths
     # https://flask.palletsprojects.com/en/1.1.x/blueprints/#static-files
     # https://flask.palletsprojects.com/en/1.1.x/blueprints/#templates
@@ -28,14 +25,25 @@ def create_app(context=None, server=None, uri=None, **kwargs):
     def index():
         return render_template('helloflask/index.html')
 
-    server.register_blueprint(app)
+    # optional, only use if you need it
+    from helloflask import optional
+    # om = optional.load_om(context)
+    # optional.add_live_resources(om, app)
+    # optional.add_live_templates(om, server, app)
+    # optional.add_omega_logger(om, server)
 
-    handler = OmegaLoggingHandler.setup(logger=logging.getLogger('root'), level='DEBUG')
-    [logging.getLogger(l).addHandler(handler) for l in ('werkzeug', 'flask.app', server.name)]
+    server.register_blueprint(app)
     return app
 
 
 if __name__ == '__main__':
     server = Flask(__name__)
-    app = create_app(server=server)
+
+
+    @server.route('/')
+    def index():
+        return redirect('/app')
+
+
+    app = create_app(server=server, uri='/app')
     server.run()

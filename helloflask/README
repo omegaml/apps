@@ -4,9 +4,14 @@ Helloflask
 This demos the use of Flask blueprint, including static files and
 templates.
 
-Detailed advise to package Flask apps can be found here
-https://flask.palletsprojects.com/en/1.1.x/tutorial/install/
+Optionally, the following features can be enabled (see app.py)
 
+* routing of Flask logging to om.logger
+* serving of static files from om.datasets ("live resources")
+* loading of templates from om.datasets ("live templates")
+
+To enable the optional features, uncomment the respective lines
+in app.py. See below for details.
 
 Run this at omegaml.io
 ----------------------
@@ -43,3 +48,37 @@ Note for development purpose you can modify and run the app locally:
     cloud-hosted environment and storage. To run a local instance of omega|ml
     simply remove the config.yml (created by the $ om login command above) and
     run omega|ml using the docker-compose file provided at https://github.com/omegaml/omegaml
+
+
+Logging to om.logger
+--------------------
+
+This routes Flask logging output to om.logger. By doing so you can get live
+log output from any omega client:
+
+$ om runtime log -f
+
+To enable this feature uncomment the line "optional.add_omega_logger(om, server)".
+
+
+Live serving of files and templates
+-----------------------------------
+
+This enables live updates of files and templates in om.datasets, without
+requiring redeploying and restarting the app. This feature should be used
+with caution as it will increase latency.
+
+To enable live templates uncomment "optional.add_live_templates(...)"
+To enable live static files,
+ * uncomment "optional.add_live_resources(...)".
+ * in templates/helloflask/base.html change '.static' to '.resources', i.e.
+   use url_for('.resources', filename=...) to serve files from om.datasets
+
+See the corresponding functions docstrings for details. To test the features
+once enabled, update the following files and upload to om.datasets:
+
+$ om datasets put helloflask/index.html files/templates/helloflask/index.html
+$ om datasets put helloflask/static/styles.css files/static/styles.css
+
+Then refresh the application's page in your browser. Your changes to these
+files will be rendered accordingly.
