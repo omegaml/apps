@@ -1,0 +1,21 @@
+Bitte zur Vorbereitung die Packages gemäss requirements.txt in einem lokalen Python Environment installieren.
+
+Mit Anaconda (conda):
+Link: https://conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html#creating-an-environment-with-commands
+
+$ mkdir /path/to/project/dpaprojekt
+$ conda env -n dpaproject python=3.9
+$ conda activate dpaproject 
+$ pip install -r requirements.txt
+
+
+Mit Virtualenv:
+Link: https://docs.python.org/3/library/venv.html
+
+$ mkdir /path/to/project/dpaprojekt
+$ python3 -m venv /path/to/project/dpaprojekt/.venv
+$ source /path/to/project/dpaprojekt/.venv
+$ pip install -r requirements.txt
+
+
+
