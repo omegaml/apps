@@ -1,0 +1,16 @@
+{% extends "helloflask/base.html" %}
+
+{% block content %}
+<div>
+<h5>Dashboard</h5>
+<div id='chart' class='chart'></div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('.static', filename='js/plotly-latest.min.js') }}"></script>
+<script type='text/javascript'>
+  var graphs = {{graphJSON | safe}};
+  Plotly.plot('chart',graphs,{});
+</script>
+</div>
+{% endblock %}

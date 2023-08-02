@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>{{ config.APP_TITLE | default("omega|ml apphub") }}</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="/static/favicon.ico">
+    <!-- Bootstrap core CSS -->
+    <link href="{{ url_for('.static', filename='css/bootstrap.min.css') }}" rel="stylesheet">
+    <!-- Custom styles for this template -->
+    <link href="{{ url_for('.static', filename='css/signin.css') }}" rel="stylesheet">
+    <link href="{{ url_for('.static', filename='css/apphub.css') }}" rel="stylesheet">
+    <link href="{{ url_for('.static', filename='css/styles.css') }}" rel="stylesheet">
+    {% block basescripts %}
+    <script src="{{ url_for('.static', filename='js/jquery-3.5.1.min.js') }}"></script>
+    <script src="{{ url_for('.static', filename='js/bootstrap.min.js') }}"></script>
+    {% endblock %}
+</head>
+<body>
+{% block header %}
+<a href="{{ url_for('.index') }}">home</a>
+<a href="{{ url_for('.logout') }}">logout</a>
+<a href="{{ url_for('.login') }}">login</a>
+{% endblock %}
+{% block content %}
+<p>here is the content</p>
+{% endblock %}
+{% block scripts %}
+{% endblock %}
+{% block footer %}
+{% endblock %}
+</body>
+</html>

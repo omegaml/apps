@@ -1,0 +1,23 @@
+{% extends "helloflask/base.html" %}
+
+{% block content %}
+<div class="form-signin">
+    <div>
+        {{ users.to_html() | safe }}
+    </div>
+    {% if current_user.has_perm('power-user') %}
+    <div>
+        <form class="form-signin" action="" method="post">
+            <label for="name" class="sr-only">Email address</label>
+            <input type="text" id="name" name="name" class="form-control" placeholder="username" required autofocus>
+            <label for="fullname" class="sr-only">apikey</label>
+            <input type="text" id="fullname" name="fullname" class="form-control" placeholder="firstname lastname"
+                   required>
+            <button class="btn btn-lg btn-primary btn-block" type="submit">Add</button>
+        </form>
+    </div>
+    {% else %}
+    <p>you must be a power user to update</p>
+    {% endif %}
+</div>
+{% endblock %}
