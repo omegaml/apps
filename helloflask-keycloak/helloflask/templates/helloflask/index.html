@@ -1,0 +1,30 @@
+{% extends "helloflask/base.html" %}
+
+{% block content %}
+<p>Hello world from index.html</p>
+<p>User data</p>
+<ul>
+    <li>User id: {{ current_user.userid }}</li>
+    <li>User has claims: {{ current_user.claims }}.</li>
+    <li>User has groups: {{ current_user.groups }}.</li>
+</ul>
+<p>Permissions</p>
+<ul>
+    <li>has permission user:{{ current_user.has_perm('user') }}</li>
+    <li>has permission power-user:{{ current_user.has_perm('power-user') }}</li>
+    <li>has permission admin:{{ current_user.has_perm('admin') }}</li>
+</ul>
+<p>Omegaml</p>
+<ul>
+    <li>omega default: {{ current_user.om }}</li>
+    {% if current_user.has_perm('power-user') %}
+        <li>omega for perm: {{ current_user.om_for_perm('power-user') }}</li>
+    {% endif %}
+</ul>
+<p>Demo Pages</p>
+<ul>
+    <li><a href="{{ url_for('.report') }}">Report</a></li>
+    <li><a href="{{ url_for('.update') }}">DB Query & Update</a></li>
+</ul>
+
+{% endblock %}

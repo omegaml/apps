@@ -1,0 +1,115 @@
+Run this at omegaml.io
+----------------------
+
+1. Make sure you have your omega-ml account's userid and apikey
+
+2. In your local Python environment install the omega|ml client and
+   checkout this repository
+
+   $ pip install omegaml[all-client]
+   $ git clone https://github.com/omegaml/apps.git
+
+   Note you can avoid installing your own Python environment and just
+   run git clone by using omega|ml's hosted JupyterLab environment at
+   https://hub.omegaml.io:8888/
+
+3. Deploy the script in your account
+
+   $ om cloud login <user> <apikey>
+   $ om scripts put ./helloflask apps/helloflask
+
+   This builds a pip-installable package, stores it in omega|ml's scripts store
+   and deploys it as a scalable kubernetes pod deployment.
+
+   In order for the app to start, you have to (re)start it using the following
+   command:
+
+   $ om runtime restart app helloworld
+
+   Give it a few minutes to start. Alternatively, go to
+   https://hub.omegaml.io/apps/restart/<user>/helloworld to see the app is
+   running ok.
+
+Testing locally
+---------------
+
+For development purpose you can modify and run the app locally:
+
+    $ python helloworld/app.py
+    => open at http://localhost:5000
+
+    Even though this runs your app locally, it will use your account's omega|ml runtime
+    cloud-hosted environment. To run a local instance of omega|ml simply remove the config.yml
+    (created by the $ om login command above) and run omega|ml using the docker-compose
+    file provided at https://github.com/omegaml/omegaml
+
+When testing locally the automated configurations added by apphub are not applied to
+your local app, e.g. for login processing. Also the way Flask calls app.create_app() is slightly
+different from apphub. Thus to run your app locally as apphub would, use a `__main__` section:
+
+    # app.py
+    ... # your code
+    if __name__ == '__main__':
+        server = Flask(__name__)
+        app = create_app(server=server)
+        server.register_blueprint(app)
+        server.run()
+
+To add more routes or configuration, the best practice is to add a function for the
+the local setup:
+
+    # app.py
+    def create_app(server=None, uri=None, **kwargs):
+        ... # your code
+        return app
+
+    def local_testing(server, app):
+        # add local routes
+        @app.route('/local')
+        def some():
+            ...
+        # update local server config
+        server.config.from_object(...)
+        server.register_blueprint(app)
+
+    if __name__ == '__main__':
+        server = Flask(__name__)
+        app = create_app(server=server)
+        local_testing(server, app)
+        server.run()
+
+OAuth2/OpenID Connect
+---------------------
+
+If your cluster is configured for OIDC authentication, the app will automatically
+be enabled for Single Sign-On (SSO). For this to work, you need to define at least one
+Flask route with the `@login_required` decorator, using the FlaskLogin package:
+
+    # app.py
+    from flask_login import login_required, current_user
+
+    def create_app(...):
+
+        @app.route('/')
+        @login_required
+        def index():
+            user = current_user
+            userid = current_user.userid
+            claims = current_user.claims
+            return render_template(...)
+
+
+The `@login_required` decorator runs the following steps:
+
+    1. It checks whether the user is logged in, if not it delegates
+       authentication to Keycloak, falling back to userid/apikey login
+       if Keycloak is not configured or login fails.
+
+    2. It logs the user in using FlaskLogin. This effectively sets a
+       user session and associates the user with a User object (the
+       flask_login.current_user)
+
+    3. It reads the JWT token and sets the User.claims to the JWT
+       payload
+
+

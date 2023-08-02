@@ -1,0 +1,16 @@
+{% extends "helloflask/base.html" %}
+
+{% block content %}
+<body class="signin text-center">
+<form class="form-signin" action="" method="post">
+    <img class="logo" src="{{ url_for('.static', filename='logo.jpg') }}" alt="">
+    <h6 class="subtitle">{{ config.APP_TITLE | default("omega|ml apphub") }}</h6>
+    <label for="username" class="sr-only">Email address</label>
+    <input type="text" id="uzser" name="username" class="form-control" placeholder="username" required autofocus>
+    <label for="password" class="sr-only">apikey</label>
+    <input type="password" id="password" name="password" class="form-control" placeholder="password" required>
+    <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
+    <p class="small" style="top:50px"><br>go back to <a href="{{ url_for('.index') }}">index</a></p>
+</form>
+</body>
+{% endblock %}
