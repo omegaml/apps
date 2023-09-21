@@ -35,14 +35,20 @@ def local_packages(pkgs, basefile):
         This way, pip install will not download
     """
     from pathlib import Path
+    import os
+    import sys
+    is_pip_download = ' '.join(sys.argv).startswith('pip download')
+    should_install_locally = os.environ.get('PIP_INSTALL_LOCAL', 'f')[0].lower() in 'yt1'
+    should_install_locally |= os.environ.get('PIP_NO_INDEX', 'f')[0].lower() in 'yt1'
+    if not (is_pip_download or should_install_locally):
+        return pkgs
     packages_dir = Path(basefile).parent / 'packages'
-    print(packages_dir)
     packages = []
     local_packages = {fn.name.lower().split('-')[0]: fn for fn in packages_dir.glob('./*') if fn.is_file()}
     for p in pkgs:
         raw_p = p.split('==')[0].lower()
         if raw_p in local_packages:
-            packages.append(f'{raw_p}@file://{local_packages[p]}')
+            packages.append(f'{raw_p}@file://{local_packages[raw_p]}')
             del local_packages[raw_p]
         else:
             packages.append(p)

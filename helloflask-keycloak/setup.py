@@ -11,4 +11,5 @@ setup(name='helloflask', version='1.0', description='simple omegaml hello world 
       include_package_data=True,
       packages=find_packages() + find_namespace_packages(),
       install_requires=local_packages([
+            'dash_bootstrap_components',
       ], __file__))
