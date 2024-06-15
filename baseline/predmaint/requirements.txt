@@ -16,7 +16,7 @@ charset-normalizer==2.0.0
 click==8.0.2
 cryptography==42.0.4
 cycler==0.10.0
-dash==2.0.0
+dash==2.15.0
 dash-core-components==2.0.0
 dash-html-components==2.0.0
 dash-table==5.0.0
