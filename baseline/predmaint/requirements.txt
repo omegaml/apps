@@ -14,7 +14,7 @@ cffi==1.14.6
 chardet==4.0.0
 charset-normalizer==2.0.0
 click==8.0.2
-cryptography==3.4.7
+cryptography==42.0.4
 cycler==0.10.0
 dash==2.0.0
 dash-core-components==2.0.0
