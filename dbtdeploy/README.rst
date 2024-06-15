@@ -6,11 +6,66 @@ job as follows. dbt projects are essentially a collection of files that make up 
 workflow. This means we can easily deploy dbt projects to omega-ml as a script, and run them
 on schedule or on-demand.
 
+The steps to deploy dbt projects to omega-ml are as follows:
+
 1. Package the dbt project(s) and deploy to omega-ml
 2. Schedule a job to run the dbt project(s)
 3. Serve the dbt project(s) documentation via omegaml's apphub (or browse locally)
 
 Here's a quick schematic overview of the components involved:
+
+.. image:: dbt-deploy.png
+    :alt: dbt-deploy
+    :align: center
+
+The following sections provide a step-by-step guide to deploy dbt projects to omega-ml,
+explaining each component. If you are just looking to deploy dbt projects without regard
+to all the gory details, follow the Quick Start section.
+
+Quick Start
+-----------
+
+If you are looking to deploy dbt projects to omega-ml without going through all the details,
+here's a quick start guide:
+
+1. Copy the `dbtdeploy` application to your dbt project's root directory::
+
+    $ cp -r /path/to/omegaml/examples/dbt/dbtdeploy /path/to/dbt
+
+2. Update the `profiles.yml` file in the `dbtdeploy` directory with your connection details::
+
+    $ cp /path/to/dbt/myproject/profiles.yml /path/to/dbt/dbtdeploy/profiles.yml
+
+3. Link your dbt project(s) into the `dbtdeploy` directory::
+
+    $ ln -s /path/to/dbt/myproject /path/to/dbt/dbtdeploy/myproject
+
+4. Package the `dbtdeploy` application and deploy to omega-ml::
+
+    $ om scripts put /path/to/dbt/dbtdeploy dbt/dbtdeploy
+
+5. Run the dbt project on-demand::
+
+    $ om runtime script dbtdeploy run project=myproject
+
+6. Schedule the dbt project to run on a schedule::
+
+    # store the dbt_run notebook in om.jobs
+    $ om jobs put /path/to/dbt/dbt_run.ipynb dbt_run
+
+    # update the dbt_run notebook to run the dbt project(s)
+    $ om shell jupyter
+
+7. Serve the dbt project documentation via omegaml's apphub::
+
+    # package the app
+    $ om scripts put /path/to/dbt/dbtdeploy apps/dbtdeploy
+    $ om runtime restart app dbtdeploy
+
+    Alternatively, serve the docs locally by running the following command:
+
+    $ FLASK_APP=/path/to/dbt/dbtdeploy:create_app flask run
+
 
 Create the dbtdeploy application
 --------------------------------
@@ -152,7 +207,8 @@ Schedule dbt projects
 ---------------------
 
 To run the dbt project as a scheduled job, we need to create a job (notebook) that runs one or
-all dbt projects. The notebook should look as follows and be stored in om.jobs.
+all dbt projects. This notebook, we'll call it `dbt_run`, should look as follows
+and be stored in om.jobs.
 
 The notebook essentially has three parts:
 
@@ -165,7 +221,8 @@ Here's how to create the job:
 
 1. Create a job (notebook) to run the dbtdeploy application::
 
-    # in om.jobs
+    # in /path/to/dbt/dbt_run.ipynb
+    # store this in om.jobs (om jobs put dbt_run.ipynb dbt_run)
     [1] # cron: 0 0 * * 1
         # comment: run every Monday at midnight
     [2] # (1) import dbt project and prepare dbt profile
@@ -180,6 +237,10 @@ Here's how to create the job:
         !dbt docs generate --profiles-dir $dbt_dir --project-dir $project_dir --target-path report
         !python -m zipfile -c report.zip $project_dir/report
         !om datasets put ./report.zip $project/report.zip
+
+2. Save the notebook to om.jobs::
+
+    $ om jobs put dbtdeploy/dbt_run.ipynb dbt_run
 
 Serve the dbt project documentation
 -----------------------------------
