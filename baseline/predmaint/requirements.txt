@@ -100,7 +100,7 @@ testpath==0.5.0
 threadpoolctl==3.0.0
 tornado==6.1
 traitlets==5.1.0
-urllib3==1.26.7
+urllib3==1.26.18
 wcwidth==0.2.5
 webencodings==0.5.1
 websocket-client==0.57.0
