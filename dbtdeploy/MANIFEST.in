@@ -1,0 +1,4 @@
+# make this relative to your static folder
+# add any other folders with files required
+include *.in
+recursive-include dbtdeploy *

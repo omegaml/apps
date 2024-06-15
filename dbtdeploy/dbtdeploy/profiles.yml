@@ -1,0 +1,23 @@
+foox:
+  outputs:
+    dev:
+      type: sqlite
+      threads: 1
+      database: test
+      schema: '{OMEGA_BUCKET}'
+      schemas_and_paths:
+        main: './etl.db'
+      schema_directory: './data'
+
+    prod:
+      type: sqlite
+      threads: 1
+      database: test
+      schema: 'main'
+      schemas_and_paths:
+        main: './etl.db'
+      schema_directory: './data'
+
+  target: dev
+
+
