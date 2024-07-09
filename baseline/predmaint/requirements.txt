@@ -106,4 +106,4 @@ webencodings==0.5.1
 websocket-client==0.57.0
 Werkzeug==3.0.3
 wheel==0.38.1
-zipp==3.6.0
+zipp==3.19.1
